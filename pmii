@@ -1,0 +1,2744 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MAPABA PMII Budi Utomo Ponorogo - Portal & CRUD Terpadu</title>
+  
+  <!-- Font Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       1. IDENTITAS WARNA RESMI PMII (BIRU PERGERAKAN & KUNING BINTANG) + DAY/NIGHT
+       ========================================================================== */
+    :root[data-theme="dark"] {
+      --bg-main: #050b14;
+      --bg-surface: #0a1426;
+      --bg-card: #0f1f38;
+      --bg-input: #070e1b;
+      --border-color: #1e355b;
+      --border-focus: #facc15;
+      
+      --pmii-blue: #0b4ea2;
+      --pmii-blue-dark: #002b66;
+      --pmii-blue-light: #1d6ed8;
+      --pmii-blue-glow: rgba(29, 110, 216, 0.35);
+      
+      --pmii-yellow: #facc15;
+      --pmii-yellow-hover: #eab308;
+      --pmii-yellow-glow: rgba(250, 204, 21, 0.35);
+      --pmii-yellow-dark: #854d0e;
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --status-verified: #10b981;
+      --status-pending: #f59e0b;
+      --status-rejected: #ef4444;
+      
+      --shadow-card: 0 10px 30px rgba(0, 7, 20, 0.7);
+      --bottom-nav-bg: rgba(10, 20, 38, 0.95);
+    }
+
+    :root[data-theme="light"] {
+      --bg-main: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-card: #f8fafc;
+      --bg-input: #ffffff;
+      --border-color: #cbd5e1;
+      --border-focus: #0b4ea2;
+      
+      --pmii-blue: #0b4ea2;
+      --pmii-blue-dark: #002d72;
+      --pmii-blue-light: #2563eb;
+      --pmii-blue-glow: rgba(11, 78, 162, 0.2);
+      
+      --pmii-yellow: #d97706;
+      --pmii-yellow-hover: #b45309;
+      --pmii-yellow-glow: rgba(217, 119, 6, 0.25);
+      --pmii-yellow-dark: #78350f;
+
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #94a3b8;
+      
+      --status-verified: #059669;
+      --status-pending: #d97706;
+      --status-rejected: #dc2626;
+      
+      --shadow-card: 0 8px 24px rgba(11, 78, 162, 0.08);
+      --bottom-nav-bg: rgba(255, 255, 255, 0.95);
+    }
+
+    /* Reset & Base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 84px; /* Space for Mobile Bottom Nav */
+    }
+
+    .container {
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* Header Navigasi */
+    header.site-header {
+      padding: 14px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-surface);
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .brand-badge .logo-circle {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--pmii-blue), var(--pmii-blue-dark));
+      border: 2px solid var(--pmii-yellow);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 16px;
+      color: #ffffff;
+      box-shadow: 0 0 14px var(--pmii-blue-glow);
+    }
+
+    .brand-badge .brand-text {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .brand-badge .brand-sub {
+      font-size: 11px;
+      color: var(--pmii-yellow);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .header-nav-desktop {
+      display: none;
+      gap: 6px;
+    }
+
+    @media (min-width: 820px) {
+      .header-nav-desktop {
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      color: var(--text-main);
+      background: rgba(11, 78, 162, 0.15);
+    }
+
+    .nav-btn.active {
+      color: var(--pmii-yellow);
+      border: 1px solid var(--pmii-yellow);
+    }
+
+    .theme-toggle-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 7px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 38px;
+    }
+
+    /* Bottom Navigation Bar untuk Android */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bottom-nav-bg);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 4px;
+      z-index: 99;
+    }
+
+    @media (min-width: 821px) {
+      .bottom-nav {
+        display: none;
+      }
+      body {
+        padding-bottom: 30px;
+      }
+    }
+
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 700;
+      background: transparent;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .bottom-nav-item svg, .bottom-nav-item span.nav-icon {
+      font-size: 17px;
+    }
+
+    .bottom-nav-item.active {
+      color: var(--pmii-yellow);
+    }
+
+    /* Views */
+    .view-section {
+      display: none;
+      animation: fadeInView 0.25s ease-out;
+      margin-top: 18px;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeInView {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards */
+    .card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-card);
+    }
+
+    /* Hero Landing */
+    .hero {
+      text-align: center;
+      padding: 28px 0 32px;
+    }
+
+    .hero-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 16px;
+      background: rgba(11, 78, 162, 0.2);
+      border: 1px solid var(--pmii-blue-light);
+      color: #93c5fd;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 14px;
+      letter-spacing: 0.5px;
+    }
+
+    :root[data-theme="light"] .hero-badge-pill {
+      color: var(--pmii-blue-dark);
+      background: rgba(11, 78, 162, 0.1);
+    }
+
+    .hero-title {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1.25;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+
+    .hero-title .gold-text {
+      color: var(--pmii-yellow);
+      text-shadow: 0 0 16px var(--pmii-yellow-glow);
+    }
+
+    .hero-quote {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 580px;
+      margin: 0 auto 22px;
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 46px;
+      text-decoration: none;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #facc15, #eab308);
+      color: #0b172a;
+      box-shadow: 0 4px 18px var(--pmii-yellow-glow);
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(250, 204, 21, 0.45);
+    }
+
+    .btn-blue {
+      background: linear-gradient(135deg, var(--pmii-blue), var(--pmii-blue-dark));
+      color: #ffffff;
+      border: 1px solid var(--pmii-yellow);
+      box-shadow: 0 4px 16px var(--pmii-blue-glow);
+    }
+
+    .btn-blue:hover {
+      background: linear-gradient(135deg, var(--pmii-blue-light), var(--pmii-blue));
+    }
+
+    .btn-outline {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1.5px solid var(--border-color);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--pmii-yellow);
+    }
+
+    /* Grid Fitur */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    @media (min-width: 600px) {
+      .feature-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 18px;
+      border-left: 4px solid var(--pmii-blue);
+    }
+
+    .feature-card:nth-child(even) {
+      border-left-color: var(--pmii-yellow);
+    }
+
+    .feature-card h4 {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feature-card p {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 20px;
+      border-left: 2px dashed var(--border-color);
+      margin: 16px 0 24px 10px;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -27px;
+      top: 3px;
+      width: 14px;
+      height: 14px;
+      background: var(--pmii-yellow);
+      border: 3px solid var(--pmii-blue);
+      border-radius: 50%;
+    }
+
+    .timeline-date {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--pmii-yellow);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .timeline-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-top: 2px;
+    }
+
+    .timeline-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Form Styles */
+    .sticky-progress-container {
+      position: sticky;
+      top: 70px;
+      background: var(--bg-surface);
+      z-index: 40;
+      padding: 14px 18px;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .step-current-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step-counter {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--pmii-yellow);
+      background: rgba(250, 204, 21, 0.15);
+      border: 1px solid rgba(250, 204, 21, 0.3);
+      padding: 2px 10px;
+      border-radius: 8px;
+    }
+
+    .progress-bar-track {
+      height: 7px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--pmii-blue), var(--pmii-yellow));
+      border-radius: 10px;
+      width: 11.1%;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .form-step {
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .form-step.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .req {
+      color: var(--status-rejected);
+      font-weight: bold;
+    }
+
+    .form-control {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--pmii-yellow);
+      box-shadow: 0 0 0 3px var(--pmii-yellow-glow);
+    }
+
+    textarea.form-control {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    select.form-control {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 16px;
+      padding-right: 36px;
+    }
+
+    .input-error-msg {
+      color: var(--status-rejected);
+      font-size: 11px;
+      margin-top: 4px;
+      display: none;
+      font-weight: 600;
+    }
+
+    .has-error .form-control {
+      border-color: var(--status-rejected) !important;
+    }
+
+    .has-error .input-error-msg {
+      display: block;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .options-grid.grid-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .option-tile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 11px 14px;
+      cursor: pointer;
+      user-select: none;
+      min-height: 46px;
+    }
+
+    .option-tile:hover {
+      border-color: var(--pmii-blue-light);
+    }
+
+    .option-tile input[type="radio"],
+    .option-tile input[type="checkbox"] {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-color);
+      border-radius: 4px;
+      outline: none;
+      display: grid;
+      place-content: center;
+      cursor: pointer;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    .option-tile input[type="radio"] {
+      border-radius: 50%;
+    }
+
+    .option-tile input[type="radio"]:checked,
+    .option-tile input[type="checkbox"]:checked {
+      border-color: var(--pmii-yellow);
+      background-color: var(--pmii-blue);
+    }
+
+    .option-tile input[type="radio"]:checked::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background-color: var(--pmii-yellow);
+      border-radius: 50%;
+    }
+
+    .option-tile input[type="checkbox"]:checked::before {
+      content: "✓";
+      color: var(--pmii-yellow);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .option-tile.selected {
+      border-color: var(--pmii-yellow);
+      background: rgba(11, 78, 162, 0.15);
+    }
+
+    .file-upload-box {
+      border: 2px dashed var(--border-color);
+      border-radius: 14px;
+      padding: 18px;
+      text-align: center;
+      background: var(--bg-input);
+      cursor: pointer;
+    }
+
+    .file-preview {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 10px;
+      display: none;
+      border: 3px solid var(--pmii-yellow);
+    }
+
+    .draft-alert {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 12px 14px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    /* Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--status-pending);
+      border: 1px solid var(--status-pending);
+    }
+
+    .badge-verified {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--status-verified);
+      border: 1px solid var(--status-verified);
+    }
+
+    .badge-rejected {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--status-rejected);
+      border: 1px solid var(--status-rejected);
+    }
+
+    /* Dashboard Panitia */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--pmii-yellow);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .crud-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 12.5px;
+    }
+
+    table.data-table th {
+      background: var(--pmii-blue-dark);
+      color: #ffffff;
+      padding: 12px 14px;
+      font-weight: 800;
+      white-space: nowrap;
+      border-bottom: 2px solid var(--pmii-yellow);
+    }
+
+    table.data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    table.data-table tr:hover {
+      background: rgba(11, 78, 162, 0.08);
+    }
+
+    .action-btn-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-sm {
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 8px;
+      min-height: auto;
+    }
+
+    /* FAQ */
+    .faq-item {
+      border-bottom: 1px solid var(--border-color);
+      padding: 14px 0;
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-question {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .faq-answer {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .faq-item.active .faq-answer {
+      display: block;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 7, 20, 0.85);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1000;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-dialog {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--pmii-yellow);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 520px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-header h3 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .close-modal-btn {
+      background: transparent;
+      border: none;
+      font-size: 22px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    /* ID Card Preview Digital */
+    .id-card-preview {
+      background: linear-gradient(135deg, var(--pmii-blue), #031c3f);
+      border: 2px solid var(--pmii-yellow);
+      color: #ffffff;
+      border-radius: 16px;
+      padding: 22px 18px;
+      text-align: center;
+      margin: 16px 0;
+      position: relative;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .id-card-preview .card-logo {
+      font-weight: 900;
+      color: var(--pmii-yellow);
+      letter-spacing: 1px;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    .id-card-preview .card-num {
+      font-family: monospace;
+      font-size: 18px;
+      font-weight: 800;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 14px;
+      border-radius: 8px;
+      display: inline-block;
+      margin: 8px 0;
+      color: var(--pmii-yellow);
+      border: 1px dashed rgba(250, 204, 21, 0.5);
+    }
+
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .site-header, .bottom-nav, .hero, .crud-toolbar, .btn, .header-nav-desktop, .theme-toggle-btn {
+        display: none !important;
+      }
+      .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+      .id-card-preview {
+        border: 2px solid #000 !important;
+        color: #000 !important;
+        background: #fff !important;
+      }
+      .id-card-preview * {
+        color: #000 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header Navigasi -->
+    <header class="site-header">
+      <div class="brand-badge" onclick="switchView('landing')">
+        <div class="logo-circle">PMII</div>
+        <div>
+          <div class="brand-text" id="cfgOrg">PMII Budi Utomo</div>
+          <div class="brand-sub">PONOROGO • MAPABA 2026</div>
+        </div>
+      </div>
+
+      <!-- Desktop Navigasi -->
+      <nav class="header-nav-desktop">
+        <button type="button" class="nav-btn active" id="dnav-landing" onclick="switchView('landing')">Beranda</button>
+        <button type="button" class="nav-btn" id="dnav-register" onclick="switchView('register')">Pendaftaran</button>
+        <button type="button" class="nav-btn" id="dnav-lookup" onclick="switchView('lookup')">Dashboard Peserta</button>
+        <button type="button" class="nav-btn" id="dnav-admin" onclick="switchView('admin')">Dashboard Panitia</button>
+      </nav>
+
+      <!-- Day / Night Mode Switcher -->
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleDayNightMode()" aria-label="Ganti Tema Siang/Malam">
+        <span id="themeIcon">☀️</span>
+        <span id="themeLabel" style="font-size: 11px;">Siang</span>
+      </button>
+    </header>
+
+    <!-- ==========================================================================
+         VIEW 1: LANDING PAGE
+         ========================================================================== -->
+    <main id="view-landing" class="view-section active">
+      <section class="hero">
+        <div class="hero-badge-pill">⭐ KADERISASI FORMAL PERGERAKAN TAHAP I</div>
+        <h1 class="hero-title">
+          MAPABA <span class="gold-text">PMII BUDI UTOMO</span>
+        </h1>
+        <p class="hero-quote">“Langkah Pertama untuk Berproses, Berorganisasi, dan Bertumbuh Berlandaskan Nilai Islam Ahlussunnah wal Jama'ah & Kebangsaan di Bumi Reog Ponorogo.”</p>
+        
+        <div class="hero-actions">
+          <button type="button" class="btn btn-gold" onclick="switchView('register')">
+            Daftar Sekarang 🚀
+          </button>
+          <button type="button" class="btn btn-blue" onclick="switchView('lookup')">
+            🔍 Cek Status Peserta
+          </button>
+          <button type="button" class="btn btn-outline" onclick="switchView('admin')">
+            🛡️ Portal Panitia
+          </button>
+        </div>
+      </section>
+
+      <!-- Filosofi Aswaja PMII -->
+      <div class="card" style="background: linear-gradient(135deg, rgba(11,78,162,0.25), rgba(7,14,27,0.5)); border-color: var(--pmii-blue-light); text-align: center;">
+        <h3 style="color: var(--pmii-yellow); font-size: 16px; font-weight: 900; margin-bottom: 6px;">Dzikir, Fikir, Amal Sholeh</h3>
+        <p style="font-size: 13px; color: var(--text-main); max-width: 620px; margin: 0 auto;">
+          Membina insan mahasiswa muslim Indonesia yang bertaqwa kepada Allah SWT, berbudi luhur, berilmu, cakap, serta bertanggung jawab mengamalkan ilmunya demi kemajuan bangsa dan agama.
+        </p>
+      </div>
+
+      <!-- Feature Grid -->
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h4>🎯 Apa itu MAPABA?</h4>
+          <p>Masa Penerimaan Anggota Baru merupakan fase inisiasi formal PMII untuk menanamkan Nilai Dasar Pergerakan (NDP), keislaman Aswaja, kebangsaan, dan kepemimpinan nalar kritis mahasiswa.</p>
+        </div>
+        <div class="feature-card">
+          <h4>🌟 Keuntungan Menjadi Kader</h4>
+          <p>Jaringan alumni dan kader nasional ribuan kampus, pelatihan public speaking & advokasi, bimbingan riset ilmiah, serta ruang aktualisasi potensi minat bakat secara terarah.</p>
+        </div>
+        <div class="feature-card">
+          <h4>📑 Persyaratan Peserta</h4>
+          <p>Mahasiswa aktif, mengisi formulir online secara lengkap, berkomitmen mengikuti seluruh rangkaian materi hingga prosesi sakral baiat pengukuhan anggota resmi.</p>
+        </div>
+        <div class="feature-card">
+          <h4>📍 Lokasi & Jadwal</h4>
+          <p><strong id="cfgLocLanding">Ponorogo, Jawa Timur</strong>. Koordinasi teknis, pembagian kelompok, dan jadwal screening akan disampaikan melalui kontak WhatsApp panitia.</p>
+        </div>
+      </div>
+
+      <!-- Timeline Pelaksanaan -->
+      <div class="card">
+        <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+          <span>🗓️</span> Alur Pelaksanaan MAPABA PMII Budi Utomo Ponorogo
+        </h3>
+        
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">Tahap 1 • Registrasi Mandiri</div>
+            <div class="timeline-title">Pengisian Formulir Digital</div>
+            <div class="timeline-desc">Calon peserta melengkapi biodata 9 langkah serta mengonfirmasi pendaftaran ke nomor WhatsApp resmi panitia.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">Tahap 2 • Verifikasi & Screening</div>
+            <div class="timeline-title">Validasi Berkas & Wawancara Awal</div>
+            <div class="timeline-desc">Panitia memvalidasi kesiapan calon anggota dan memberikan pembekalan pra-MAPABA.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">Tahap 3 • Forum Kaderisasi</div>
+            <div class="timeline-title">Penyampaian Materi & Diskusi Reflektif</div>
+            <div class="timeline-desc">Materi Ke-PMII-an, Islam Aswaja, Analisis Sosial & Gerakan Mahasiswa, serta simulasi sidang & FGD.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">Tahap 4 • Puncak Baiat</div>
+            <div class="timeline-title">Pembaiatan Resmi & Penyerahan Sertifikat</div>
+            <div class="timeline-desc">Pengukuhan sakral sebagai Anggota Resmi PMII Budi Utomo Ponorogo dan penyerahan Kartu Tanda Anggota (KTA).</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ Accordion -->
+      <div class="card">
+        <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+          <span>❓</span> Tanya Jawab Umum (FAQ)
+        </h3>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>Apakah mahasiswa baru/lama dari luar kampus Budi Utomo boleh ikut?</span>
+            <span>+</span>
+          </div>
+          <div class="faq-answer">
+            Sangat diperbolehkan! PMII Budi Utomo Ponorogo terbuka bagi mahasiswa perguruan tinggi mana pun yang memiliki tekad berproses bersama dalam wadah pergerakan.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>Bagaimana cara mengecek bahwa data saya sudah terverifikasi?</span>
+            <span>+</span>
+          </div>
+          <div class="faq-answer">
+            Buka menu <strong>"Dashboard Peserta"</strong> lalu masukkan ID Registrasi atau nomor WhatsApp yang Anda daftarkan untuk melihat status realtime dan mencetak kartu tanda peserta digital.
+          </div>
+        </div>
+      </div>
+
+      <!-- Narahubung Resmi -->
+      <div class="card" style="text-align: center; border-color: var(--pmii-yellow);">
+        <h4 style="color: var(--text-main); font-size: 15px; font-weight: 800; margin-bottom: 6px;">Pusat Informasi & Narahubung Panitia</h4>
+        <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">Hubungi sahabat-sahabati panitia pelaksana untuk konsultasi atau konfirmasi pendaftaran:</p>
+        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+          <a id="btnLandingWa" href="https://wa.me/6285233108302?text=Halo%20Panitia%20MAPABA%20PMII%20Budi%20Utomo%20Ponorogo" target="_blank" class="btn btn-outline" style="font-size: 12.5px;">
+            💬 WhatsApp 0852-3310-8302
+          </a>
+          <a id="btnLandingIg" href="https://instagram.com/pmiibudiutomoponorogo" target="_blank" class="btn btn-outline" style="font-size: 12.5px;">
+            📸 IG @pmiibudiutomoponorogo
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <!-- ==========================================================================
+         VIEW 2: FORMULIR PENDAFTARAN MULTI-STEP 9 LANGKAH (CREATE PESERTA)
+         ========================================================================== -->
+    <main id="view-register" class="view-section">
+      <div class="card" id="formWrapper">
+        
+        <!-- Sticky Progress Bar -->
+        <div class="sticky-progress-container">
+          <div class="progress-labels">
+            <div class="step-current-title">
+              <span id="stepIcon">👤</span>
+              <span id="stepNameTitle">Langkah 1: Identitas Diri</span>
+            </div>
+            <span class="step-counter" id="stepCounterBadge">1 / 9</span>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <!-- Draf Pulihkan Alert -->
+        <div id="draftAlert" class="draft-alert">
+          <span style="font-size: 12px; color: var(--text-muted);">Ditemukan draf pendaftaran sebelumnya di perangkat ini. Ingin memulihkan?</span>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="btn btn-blue btn-sm" onclick="restoreDraft()">Pulihkan</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="discardDraft()">Abaikan</button>
+          </div>
+        </div>
+
+        <!-- Formulir Multi-Step -->
+        <form id="mapabaForm" novalidate onsubmit="event.preventDefault()">
+          
+          <!-- STEP 1: IDENTITAS -->
+          <div class="form-step active" data-step="1" data-step-name="Identitas Diri" data-icon="👤">
+            <div class="form-group" id="group_namaLengkap">
+              <label class="form-label">Nama Lengkap <span class="req">*</span></label>
+              <input type="text" class="form-control" id="namaLengkap" name="namaLengkap" placeholder="Sesuai KTP / KTM">
+              <div class="input-error-msg">Nama lengkap wajib diisi minimal 3 karakter.</div>
+            </div>
+
+            <div class="form-group" id="group_namaPanggilan">
+              <label class="form-label">Nama Panggilan <span class="req">*</span></label>
+              <input type="text" class="form-control" id="namaPanggilan" name="namaPanggilan" placeholder="Nama panggilan akrab">
+              <div class="input-error-msg">Nama panggilan wajib diisi.</div>
+            </div>
+
+            <div class="form-group" id="group_jenisKelamin">
+              <label class="form-label">Jenis Kelamin <span class="req">*</span></label>
+              <div class="options-grid grid-2">
+                <label class="option-tile" onclick="updateTileSelection(this)">
+                  <input type="radio" name="jenisKelamin" value="Laki-laki">
+                  <span class="option-label-text">Laki-laki</span>
+                </label>
+                <label class="option-tile" onclick="updateTileSelection(this)">
+                  <input type="radio" name="jenisKelamin" value="Perempuan">
+                  <span class="option-label-text">Perempuan</span>
+                </label>
+              </div>
+              <div class="input-error-msg">Pilih salah satu jenis kelamin.</div>
+            </div>
+
+            <div class="form-group" id="group_tempatLahir">
+              <label class="form-label">Tempat Lahir <span class="req">*</span></label>
+              <input type="text" class="form-control" id="tempatLahir" name="tempatLahir" placeholder="Kota / Kabupaten Lahir">
+              <div class="input-error-msg">Tempat lahir wajib diisi.</div>
+            </div>
+
+            <div class="form-group" id="group_tanggalLahir">
+              <label class="form-label">Tanggal Lahir <span class="req">*</span></label>
+              <input type="date" class="form-control" id="tanggalLahir" name="tanggalLahir">
+              <div class="input-error-msg">Pilih tanggal lahir Anda.</div>
+            </div>
+
+            <div class="form-group" id="group_whatsapp">
+              <label class="form-label">Nomor WhatsApp Aktif <span class="req">*</span></label>
+              <input type="tel" class="form-control" id="whatsapp" name="whatsapp" placeholder="Contoh: 081234567890">
+              <div class="input-error-msg">Nomor WhatsApp wajib valid (minimal 10 digit).</div>
+            </div>
+
+            <div class="form-group" id="group_email">
+              <label class="form-label">Email (Opsional)</label>
+              <input type="email" class="form-control" id="email" name="email" placeholder="nama@email.com">
+              <div class="input-error-msg">Format email tidak valid.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Instagram (Opsional)</label>
+              <input type="text" class="form-control" id="instagram" name="instagram" placeholder="@username">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Pas Foto Diri Rapih (Opsional)</label>
+              <div class="file-upload-box" onclick="document.getElementById('fotoInput').click()">
+                <img id="fotoPreview" class="file-preview" alt="Pratinjau Foto">
+                <div id="fotoUploadPlaceholder">
+                  <div style="font-size: 24px; margin-bottom: 4px;">📷</div>
+                  <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">Pilih Pas Foto</div>
+                  <div style="font-size: 11px; color: var(--text-dim);">Dikompresi otomatis hemat kuota.</div>
+                </div>
+              </div>
+              <input type="file" id="fotoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
+            </div>
+          </div>
+
+          <!-- STEP 2: AKADEMIK -->
+          <div class="form-step" data-step="2" data-step-name="Data Akademik" data-icon="🎓">
+            <div class="form-group" id="group_perguruanTinggi">
+              <label class="form-label">Perguruan Tinggi <span class="req">*</span></label>
+              <input type="text" class="form-control" id="perguruanTinggi" name="perguruanTinggi" placeholder="Nama Kampus / Universitas">
+              <div class="input-error-msg">Nama perguruan tinggi wajib diisi.</div>
+            </div>
+
+            <div class="form-group" id="group_fakultas">
+              <label class="form-label">Fakultas <span class="req">*</span></label>
+              <input type="text" class="form-control" id="fakultas" name="fakultas" placeholder="Contoh: Fakultas Tarbiyah / Teknik">
+              <div class="input-error-msg">Fakultas wajib diisi.</div>
+            </div>
+
+            <div class="form-group" id="group_prodi">
+              <label class="form-label">Program Studi <span class="req">*</span></label>
+              <input type="text" class="form-control" id="prodi" name="prodi" placeholder="Contoh: PAI, Manajemen, PGMI">
+              <div class="input-error-msg">Program studi wajib diisi.</div>
+            </div>
+
+            <div class="form-group" id="group_nim">
+              <label class="form-label">NIM (Nomor Induk Mahasiswa) <span class="req">*</span></label>
+              <input type="text" class="form-control" id="nim" name="nim" placeholder="Nomor Induk Mahasiswa">
+              <div class="input-error-msg">NIM wajib diisi.</div>
+            </div>
+
+            <div class="form-group" id="group_angkatan">
+              <label class="form-label">Tahun Angkatan <span class="req">*</span></label>
+              <select class="form-control" id="angkatan" name="angkatan">
+                <option value="">-- Pilih Tahun Angkatan --</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+              </select>
+              <div class="input-error-msg">Pilih tahun angkatan Anda.</div>
+            </div>
+
+            <div class="form-group" id="group_semester">
+              <label class="form-label">Semester Saat Ini <span class="req">*</span></label>
+              <select class="form-control" id="semester" name="semester">
+                <option value="">-- Pilih Semester --</option>
+                <option value="Semester 1">Semester 1</option>
+                <option value="Semester 2">Semester 2</option>
+                <option value="Semester 3">Semester 3</option>
+                <option value="Semester 4">Semester 4</option>
+                <option value="Semester 5">Semester 5</option>
+                <option value="Semester 6+">Semester 6 atau lebih</option>
+              </select>
+              <div class="input-error-msg">Pilih semester saat ini.</div>
+            </div>
+          </div>
+
+          <!-- STEP 3: DOMISILI -->
+          <div class="form-step" data-step="3" data-step-name="Domisili & Alamat" data-icon="🏡">
+            <div class="form-group" id="group_alamatRumah">
+              <label class="form-label">Alamat Rumah Lengkap <span class="req">*</span></label>
+              <textarea class="form-control" id="alamatRumah" name="alamatRumah" placeholder="Nama Jalan, RT/RW, Dusun, Desa/Kelurahan, Kecamatan"></textarea>
+              <div class="input-error-msg">Alamat rumah wajib diisi dengan jelas.</div>
+            </div>
+
+            <div class="form-group" id="group_kabupatenKota">
+              <label class="form-label">Kabupaten / Kota Asal <span class="req">*</span></label>
+              <input type="text" class="form-control" id="kabupatenKota" name="kabupatenKota" placeholder="Contoh: Ponorogo, Madiun, Magetan">
+              <div class="input-error-msg">Kabupaten/Kota asal wajib diisi.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Alamat Domisili Kuliah (Opsional)</label>
+              <textarea class="form-control" id="alamatDomisili" name="alamatDomisili" placeholder="Kos / Kontrakan / Pondok di sekitar kampus"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Tempat Tinggal Kuliah (Opsional)</label>
+              <div class="options-grid">
+                <label class="option-tile" onclick="updateTileSelection(this)">
+                  <input type="radio" name="tempatTinggal" value="Rumah Orang Tua">
+                  <span class="option-label-text">Rumah Orang Tua / Sendiri</span>
+                </label>
+                <label class="option-tile" onclick="updateTileSelection(this)">
+                  <input type="radio" name="tempatTinggal" value="Kos">
+                  <span class="option-label-text">Kos</span>
+                </label>
+                <label class="option-tile" onclick="updateTileSelection(this)">
+                  <input type="radio" name="tempatTinggal" value="Pondok Pesantren">
+                  <span class="option-label-text">Pondok Pesantren</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 4: PENDIDIKAN -->
+          <div class="form-step" data-step="4" data-step-name="Pendidikan Sebelumnya" data-icon="🏫">
+            <div class="form-group" id="group_asalSekolah">
+              <label class="form-label">Asal SMA / MA / SMK <span class="req">*</span></label>
+              <input type="text" class="form-control" id="asalSekolah" name="asalSekolah" placeholder="Nama sekolah terdahulu">
+              <div class="input-error-msg">Asal sekolah wajib diisi.</div>
+            </div>
+
+            <div class="form-group" id="group_tahunLulus">
+              <label class="form-label">Tahun Kelulusan Sekolah <span class="req">*</span></label>
+              <select class="form-control" id="tahunLulus" name="tahunLulus">
+                <option value="">-- Pilih Tahun Lulus --</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021 atau sebelumnya</option>
+              </select>
+              <div class="input-error-msg">Pilih tahun kelulusan.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Pernah Mondok / Pesantren? (Opsional)</label>
+              <div class="options-grid grid-2">
+                <label class="option-tile" onclick="updateTileSelection(this); togglePesantrenInput(true);">
+                  <input type="radio" name="pernahPesantren" value="Ya">
+                  <span class="option-label-text">Ya, Pernah</span>
+                </label>
+                <label class="option-tile" onclick="updateTileSelection(this); togglePesantrenInput(false);">
+                  <input type="radio" name="pernahPesantren" value="Tidak">
+                  <span class="option-label-text">Tidak Pernah</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group" id="group_namaPesantren" style="display: none;">
+              <label class="form-label">Nama Pondok Pesantren & Daerah <span class="req">*</span></label>
+              <input type="text" class="form-control" id="namaPesantren" name="namaPesantren" placeholder="Contoh: PP. Darussalam Gontor / PP. Al-Iman">
+              <div class="input-error-msg">Sebutkan nama pondok pesantren Anda.</div>
+            </div>
+          </div>
+
+          <!-- STEP 5: ORGANISASI -->
+          <div class="form-step" data-step="5" data-step-name="Pengalaman Organisasi" data-icon="👥">
+            <div class="form-group" id="group_pernahOrganisasi">
+              <label class="form-label">Pernah Mengikuti Organisasi? <span class="req">*</span></label>
+              <div class="options-grid grid-2">
+                <label class="option-tile" onclick="updateTileSelection(this)">
+                  <input type="radio" name="pernahOrganisasi" value="Pernah">
+                  <span class="option-label-text">Ya, Pernah</span>
+                </label>
+                <label class="option-tile" onclick="updateTileSelection(this)">
+                  <input type="radio" name="pernahOrganisasi" value="Belum Pernah">
+                  <span class="option-label-text">Belum Pernah</span>
+                </label>
+              </div>
+              <div class="input-error-msg">Pilih salah satu opsi pengalaman organisasi.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Nama Organisasi (Opsional)</label>
+              <textarea class="form-control" id="namaOrganisasi" name="namaOrganisasi" placeholder="OSIS, IPNU/IPPNU, Pramuka, BEM, Rohis, dsb."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Jabatan Terakhir (Opsional)</label>
+              <textarea class="form-control" id="jabatanOrganisasi" name="jabatanOrganisasi" placeholder="Contoh: Ketua, Sekretaris, Koordinator Divisi"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Pengalaman Kepanitiaan (Opsional)</label>
+              <textarea class="form-control" id="kepanitiaan" name="kepanitiaan" placeholder="Sebutkan kegiatan kepanitiaan yang pernah Anda ikuti"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Komunitas atau Klub (Opsional)</label>
+              <textarea class="form-control" id="komunitas" name="komunitas" placeholder="Komunitas literasi, coding, olahraga, sanggar seni, dsb."></textarea>
+            </div>
+          </div>
+
+          <!-- STEP 6: MINAT & POTENSI -->
+          <div class="form-step" data-step="6" data-step-name="Minat & Potensi" data-icon="💡">
+            <div class="form-group" id="group_bidangMinat">
+              <label class="form-label">Bidang Minat Pengembangan <span class="req">* (Pilih minimal 1)</span></label>
+              <div class="options-grid">
+                <label class="option-tile" onclick="updateCheckboxSelection(this)">
+                  <input type="checkbox" name="bidangMinat" value="Keilmuan/Intelektual">
+                  <span class="option-label-text">📚 Keilmuan & Intelektual</span>
+                </label>
+                <label class="option-tile" onclick="updateCheckboxSelection(this)">
+                  <input type="checkbox" name="bidangMinat" value="Media & Desain">
+                  <span class="option-label-text">🎨 Media, Desain & Jurnalistik</span>
+                </label>
+                <label class="option-tile" onclick="updateCheckboxSelection(this)">
+                  <input type="checkbox" name="bidangMinat" value="Public Speaking">
+                  <span class="option-label-text">🎙️ Public Speaking & Debat</span>
+                </label>
+                <label class="option-tile" onclick="updateCheckboxSelection(this)">
+                  <input type="checkbox" name="bidangMinat" value="Advokasi & Kebijakan">
+                  <span class="option-label-text">⚖️ Advokasi & Gerakan Sosial</span>
+                </label>
+                <label class="option-tile" onclick="updateCheckboxSelection(this)">
+                  <input type="checkbox" name="bidangMinat" value="Sosial Kemasyarakatan">
+                  <span class="option-label-text">🤝 Pemberdayaan Masyarakat</span>
+                </label>
+                <label class="option-tile" onclick="updateCheckboxSelection(this)">
+                  <input type="checkbox" name="bidangMinat" value="Keagamaan">
+                  <span class="option-label-text">🕌 Kajian Islam Aswaja</span>
+                </label>
+                <label class="option-tile" onclick="updateCheckboxSelection(this)">
+                  <input type="checkbox" name="bidangMinat" value="Seni & Budaya">
+                  <span class="option-label-text">🎭 Seni Reog, Sastra & Musik</span>
+                </label>
+                <label class="option-tile" onclick="updateCheckboxSelection(this)">
+                  <input type="checkbox" name="bidangMinat" value="Kewirausahaan">
+                  <span class="option-label-text">💼 Kewirausahaan & Bisnis Kreatif</span>
+                </label>
+                <label class="option-tile" onclick="updateCheckboxSelection(this)">
+                  <input type="checkbox" name="bidangMinat" value="Teknologi">
+                  <span class="option-label-text">💻 Teknologi Digital & IT</span>
+                </label>
+                <label class="option-tile" onclick="updateCheckboxSelection(this)">
+                  <input type="checkbox" name="bidangMinat" value="Kepemimpinan">
+                  <span class="option-label-text">👑 Kepemimpinan & Manajemen Organisasi</span>
+                </label>
+                <label class="option-tile" onclick="updateCheckboxSelection(this)">
+                  <input type="checkbox" name="bidangMinat" value="Lainnya">
+                  <span class="option-label-text">✨ Bidang Lainnya</span>
+                </label>
+              </div>
+              <div class="input-error-msg">Pilih sekurang-kurangnya satu bidang minat Anda.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Hobi (Opsional)</label>
+              <textarea class="form-control" id="hobi" name="hobi" placeholder="Contoh: Membaca buku, menulis puisi, sepak bola"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Keahlian Khusus (Opsional)</label>
+              <textarea class="form-control" id="keahlian" name="keahlian" placeholder="Contoh: Desain grafis, kaligrafi, tilawah, editing video"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Cita-cita / Orientasi Profesi (Opsional)</label>
+              <textarea class="form-control" id="citaCita" name="citaCita" placeholder="Profesi atau tujuan karier masa depan"></textarea>
+            </div>
+          </div>
+
+          <!-- STEP 7: PMII & MAPABA -->
+          <div class="form-step" data-step="7" data-step-name="PMII & MAPABA" data-icon="🚩">
+            <div class="form-group" id="group_sumberInfo">
+              <label class="form-label">Dari mana mengetahui informasi MAPABA? <span class="req">*</span></label>
+              <select class="form-control" id="sumberInfo" name="sumberInfo">
+                <option value="">-- Pilih Sumber Informasi --</option>
+                <option value="Teman / Sahabat">Teman Sebaya / Sahabat Kuliah</option>
+                <option value="Senior Kampus">Senior / Kakak Tingkat</option>
+                <option value="Instagram PMII">Instagram @pmiibudiutomoponorogo</option>
+                <option value="Pamflet Brosur">Brosur / Stand Informasi</option>
+                <option value="Keluarga / Alumni">Keluarga / Alumni PMII</option>
+                <option value="Lainnya">Lainnya</option>
+              </select>
+              <div class="input-error-msg">Pilih sumber informasi Anda.</div>
+            </div>
+
+            <div class="form-group" id="group_pengetahuanPmii">
+              <label class="form-label">Apa yang Anda ketahui secara singkat tentang PMII? <span class="req">*</span></label>
+              <textarea class="form-control" id="pengetahuanPmii" name="pengetahuanPmii" placeholder="Menurut pemahaman awal yang Anda ketahui..."></textarea>
+              <div class="input-error-msg">Jelaskan pandangan Anda (minimal 10 karakter).</div>
+            </div>
+
+            <div class="form-group" id="group_alasanMapaba">
+              <label class="form-label">Alasan Anda mendaftar & ingin mengikuti MAPABA? <span class="req">*</span></label>
+              <textarea class="form-control" id="alasanMapaba" name="alasanMapaba" placeholder="Alasan utama yang mendasari keikutsertaan Anda..."></textarea>
+              <div class="input-error-msg">Alasan mengikuti MAPABA wajib diisi.</div>
+            </div>
+
+            <div class="form-group" id="group_motivasiPmii">
+              <label class="form-label">Motivasi bergabung dengan PMII? <span class="req">*</span></label>
+              <textarea class="form-control" id="motivasiPmii" name="motivasiPmii" placeholder="Dorongan internal maupun eksternal Anda..."></textarea>
+              <div class="input-error-msg">Motivasi bergabung wajib diisi.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Apa yang ingin Anda kembangkan selama berproses? (Opsional)</label>
+              <textarea class="form-control" id="pengembanganDiri" name="pengembanganDiri" placeholder="Contoh: Keberanian bersuara, analisis sosial, jaringan relasi..."></textarea>
+            </div>
+
+            <div class="form-group" id="group_harapanMapaba">
+              <label class="form-label">Harapan Anda setelah lulus MAPABA? <span class="req">*</span></label>
+              <textarea class="form-control" id="harapanMapaba" name="harapanMapaba" placeholder="Target konkret setelah menjadi anggota resmi..."></textarea>
+              <div class="input-error-msg">Harapan pasca-MAPABA wajib diisi.</div>
+            </div>
+          </div>
+
+          <!-- STEP 8: KOMITMEN -->
+          <div class="form-step" data-step="8" data-step-name="Komitmen Peserta" data-icon="📜">
+            <div class="form-group" id="group_komitmenRangkaian">
+              <label class="form-label">Bersedia mengikuti seluruh rangkaian acara MAPABA? <span class="req">*</span></label>
+              <div class="options-grid grid-2">
+                <label class="option-tile" onclick="updateTileSelection(this)">
+                  <input type="radio" name="komitmenRangkaian" value="Bersedia">
+                  <span class="option-label-text">Ya, Bersedia Penuh</span>
+                </label>
+                <label class="option-tile" onclick="updateTileSelection(this)">
+                  <input type="radio" name="komitmenRangkaian" value="Tidak">
+                  <span class="option-label-text">Tidak Bersedia</span>
+                </label>
+              </div>
+              <div class="input-error-msg">Pernyataan kesediaan harus disepakati.</div>
+            </div>
+
+            <div class="form-group" id="group_komitmenKaderisasi">
+              <label class="form-label">Bersedia melanjutkan proses kaderisasi PMII pasca-MAPABA? <span class="req">*</span></label>
+              <div class="options-grid grid-2">
+                <label class="option-tile" onclick="updateTileSelection(this)">
+                  <input type="radio" name="komitmenKaderisasi" value="Bersedia">
+                  <span class="option-label-text">Ya, Bersedia</span>
+                </label>
+                <label class="option-tile" onclick="updateTileSelection(this)">
+                  <input type="radio" name="komitmenKaderisasi" value="Tidak">
+                  <span class="option-label-text">Tidak Bersedia</span>
+                </label>
+              </div>
+              <div class="input-error-msg">Pernyataan kesediaan kaderisasi harus disepakati.</div>
+            </div>
+
+            <div class="form-group" id="group_komitmenTataTertib">
+              <label class="form-label">Bersedia menaati seluruh tata tertib panitia? <span class="req">*</span></label>
+              <div class="options-grid grid-2">
+                <label class="option-tile" onclick="updateTileSelection(this)">
+                  <input type="radio" name="komitmenTataTertib" value="Bersedia">
+                  <span class="option-label-text">Ya, Bersedia</span>
+                </label>
+                <label class="option-tile" onclick="updateTileSelection(this)">
+                  <input type="radio" name="komitmenTataTertib" value="Tidak">
+                  <span class="option-label-text">Tidak Bersedia</span>
+                </label>
+              </div>
+              <div class="input-error-msg">Persetujuan tata tertib wajib disepakati.</div>
+            </div>
+
+            <div class="form-group" id="group_pernyataanPeserta">
+              <label class="option-tile" onclick="updateCheckboxSelection(this)" style="padding: 14px;">
+                <input type="checkbox" id="pernyataanPeserta" name="pernyataanPeserta" value="Setuju">
+                <span class="option-label-text" style="font-size: 12px; line-height: 1.5;">
+                  <strong>Pernyataan Peserta:</strong> Saya menyatakan bahwa seluruh data yang saya isikan adalah benar, valid, dan dapat dipertanggungjawabkan serta mendaftar atas kemauan sendiri secara sadar.
+                </span>
+              </label>
+              <div class="input-error-msg" style="margin-left: 6px;">Anda wajib menyetujui pernyataan integritas ini.</div>
+            </div>
+          </div>
+
+          <!-- STEP 9: KONTAK DARURAT -->
+          <div class="form-step" data-step="9" data-step-name="Kontak Darurat" data-icon="🚨">
+            <div class="form-group">
+              <label class="form-label">Nama Kontak Darurat</label>
+              <input type="text" class="form-control" id="kontakDaruratNama" name="kontakDaruratNama" placeholder="Nama Orang Tua / Wali / Saudara">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Hubungan dengan Calon Peserta</label>
+              <input type="text" class="form-control" id="kontakDaruratHubungan" name="kontakDaruratHubungan" placeholder="Contoh: Orang Tua / Kakak Kandung">
+            </div>
+
+            <div class="form-group" id="group_kontakDaruratNo">
+              <label class="form-label">Nomor Telepon / WhatsApp Darurat</label>
+              <input type="tel" class="form-control" id="kontakDaruratNo" name="kontakDaruratNo" placeholder="08xxxxxxxxxx">
+              <div class="input-error-msg">Nomor darurat tidak valid (minimal 10 digit).</div>
+            </div>
+          </div>
+
+          <!-- Navigasi Langkah -->
+          <div style="display: flex; gap: 10px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border-color);">
+            <button type="button" class="btn btn-outline" id="btnPrev" onclick="navigateStep(-1)" style="display: none; flex: 1;">
+              ← Kembali
+            </button>
+            <button type="button" class="btn btn-blue" id="btnNext" onclick="navigateStep(1)" style="flex: 2;">
+              Lanjutkan →
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tampilan Sukses Pendaftaran -->
+      <div class="card" id="successView" style="display: none; text-align: center; padding: 28px 16px;">
+        <div style="font-size: 50px; margin-bottom: 12px;">🎉</div>
+        <h2 style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-bottom: 6px;">Pendaftaran Berhasil Dikirim!</h2>
+        <p style="font-size: 13px; color: var(--text-muted); max-width: 460px; margin: 0 auto 16px;">
+          Selamat berproses, Sahabat! Data pendaftaran Anda telah tercatat dengan ID Registrasi resmi di bawah ini:
+        </p>
+
+        <div class="id-card-preview" id="receiptPrintArea">
+          <div class="card-logo">MAPABA PMII BUDI UTOMO PONOROGO 2026</div>
+          <div class="card-num" id="resRegId">MAPABA-BU-2026-0001</div>
+          <h3 style="font-size: 17px; font-weight: 800;" id="resNama">Nama Lengkap</h3>
+          <p style="font-size: 12px; opacity: 0.9;" id="resCampus">Kampus / Program Studi</p>
+          <div style="margin-top: 10px;">
+            <span class="status-badge badge-pending" id="resStatusBadge">MENUNGGU VERIFIKASI</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; max-width: 360px; margin: 20px auto 0;">
+          <a id="waConfirmBtn" href="https://wa.me/6285233108302" target="_blank" class="btn btn-gold" style="text-decoration: none;">
+            📲 Konfirmasi ke WhatsApp Panitia
+          </a>
+          <button type="button" class="btn btn-outline" onclick="window.print()">
+            🖨️ Cetak / Simpan Kartu Peserta
+          </button>
+          <button type="button" class="btn btn-outline" onclick="resetFormToStart()">
+            Daftarkan Peserta Lain
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- ==========================================================================
+         VIEW 3: DASHBOARD PESERTA (READ & EDIT MANDIRI)
+         ========================================================================== -->
+    <main id="view-lookup" class="view-section">
+      <div class="card">
+        <h2 style="font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
+          🔍 Dashboard Peserta: Cek Status & Kartu Digital
+        </h2>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px;">
+          Masukkan ID Registrasi (contoh: <code>MAPABA-BU-2026-0001</code>) atau nomor WhatsApp yang digunakan saat mendaftar:
+        </p>
+
+        <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+          <input type="text" class="form-control" id="lookupQuery" placeholder="Masukkan ID Registrasi atau No. WhatsApp (cth: 0812...)">
+          <button type="button" class="btn btn-blue" onclick="searchParticipantStatus()">Cari</button>
+        </div>
+
+        <!-- Kartu Peserta Digital -->
+        <div id="lookupResult" style="display: none;">
+          <div class="id-card-preview">
+            <div class="card-logo">KARTU PESERTA MAPABA PMII BUDI UTOMO PONOROGO</div>
+            <div class="card-num" id="lookId">ID-0000</div>
+            <h3 style="font-size: 19px; font-weight: 900;" id="lookName">Nama Calon Peserta</h3>
+            <p style="font-size: 13px; opacity: 0.9;" id="lookCampus">Perguruan Tinggi</p>
+            <div style="margin: 12px 0;">
+              <span id="lookBadge" class="status-badge badge-pending">MENUNGGU VERIFIKASI</span>
+            </div>
+            <div style="font-size: 12px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px; text-align: left; margin-top: 10px; line-height: 1.8;">
+              <div><strong>WhatsApp:</strong> <span id="lookWa">-</span></div>
+              <div><strong>Fakultas / Prodi:</strong> <span id="lookProdi">-</span></div>
+              <div><strong>Bidang Minat:</strong> <span id="lookMinat">-</span></div>
+              <div><strong>Waktu Pendaftaran:</strong> <span id="lookTime">-</span></div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline" onclick="window.print()" style="flex: 1;">
+              🖨️ Cetak Kartu
+            </button>
+            <button type="button" class="btn btn-gold" id="btnEditSelf" onclick="openSelfEditModal()" style="flex: 1;">
+              ✏️ Perbarui Data Saya
+            </button>
+            <a id="btnLookupWaHelp" href="https://wa.me/6285233108302" target="_blank" class="btn btn-blue" style="flex: 1; text-decoration: none;">
+              💬 Hubungi Panitia
+            </a>
+          </div>
+        </div>
+
+        <div id="lookupNotFound" style="display: none; padding: 20px; text-align: center; color: var(--status-rejected); background: rgba(239,68,68,0.08); border-radius: 12px; margin-top: 14px;">
+          Data pendaftar tidak ditemukan. Pastikan nomor WhatsApp atau ID Pendaftaran dimasukkan dengan benar.
+        </div>
+      </div>
+    </main>
+
+    <!-- ==========================================================================
+         VIEW 4: DASHBOARD PANITIA (CRUD LENGKAP & STATISTIK)
+         ========================================================================== -->
+    <main id="view-admin" class="view-section">
+      <!-- Gerbang Login PIN Panitia -->
+      <div class="card" id="adminLoginGate" style="max-width: 440px; margin: 30px auto; text-align: center;">
+        <div style="font-size: 44px; margin-bottom: 8px;">🛡️</div>
+        <h2 style="font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Dashboard Khusus Panitia</h2>
+        <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 18px;">
+          Silakan masukkan PIN Keamanan Panitia untuk mengakses basis data pendaftar PMII Budi Utomo Ponorogo.
+        </p>
+
+        <div class="form-group" style="text-align: left;">
+          <label class="form-label">PIN Panitia</label>
+          <input type="password" class="form-control" id="adminPinInput" placeholder="Default PIN: pmii2026" onkeydown="if(event.key==='Enter') loginAdmin()">
+          <span style="font-size: 11px; color: var(--text-dim); margin-top: 4px; display: block;">*Default sandi: <code>pmii2026</code> (dapat disesuaikan di CONFIG)</span>
+        </div>
+        <button type="button" class="btn btn-blue" style="width: 100%;" onclick="loginAdmin()">Buka Dashboard Panitia</button>
+      </div>
+
+      <!-- Panel CRUD Panitia Aktif -->
+      <div id="adminPanel" style="display: none;">
+        <!-- Ringkasan Statistik -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-val" id="statTotal">0</div>
+            <div class="stat-label">Total Pendaftar</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statVerified" style="color: var(--status-verified);">0</div>
+            <div class="stat-label">Terverifikasi</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statPending" style="color: var(--status-pending);">0</div>
+            <div class="stat-label">Menunggu</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statGender">0 L / 0 P</div>
+            <div class="stat-label">Rasio Gender</div>
+          </div>
+        </div>
+
+        <!-- Toolbar CRUD Panitia -->
+        <div class="card">
+          <div class="crud-toolbar">
+            <div class="search-input-box" style="flex: 1; min-width: 220px;">
+              <input type="text" class="form-control" id="adminSearchInput" placeholder="Cari Nama, NIM, Kampus, WhatsApp..." oninput="filterAdminTable()">
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <select class="form-control" id="adminFilterStatus" onchange="filterAdminTable()" style="width: auto;">
+                <option value="ALL">Semua Status</option>
+                <option value="MENUNGGU VERIFIKASI">Menunggu</option>
+                <option value="TERVERIFIKASI">Terverifikasi</option>
+                <option value="DITOLAK / REVISI">Ditolak/Revisi</option>
+              </select>
+              <button type="button" class="btn btn-gold btn-sm" onclick="openCreateModal()">
+                + Tambah Manual
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="exportDataToCSV()">
+                📥 Ekspor CSV
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="window.print()">
+                🖨️ Cetak Presensi
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="logoutAdmin()" style="color: var(--status-rejected);">
+                Keluar
+              </button>
+            </div>
+          </div>
+
+          <!-- Tabel Data Peserta -->
+          <div class="table-container">
+            <table class="data-table" id="adminTable">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>ID Registrasi</th>
+                  <th>Nama Lengkap</th>
+                  <th>Kampus & Prodi</th>
+                  <th>WhatsApp</th>
+                  <th>Status</th>
+                  <th>Aksi (CRUD)</th>
+                </tr>
+              </thead>
+              <tbody id="adminTableBody">
+                <!-- Baris tabel di-generate via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+          <div id="adminEmptyNotice" style="display: none; text-align: center; padding: 24px; color: var(--text-muted);">
+            Tidak ada data pendaftar yang sesuai.
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation Bar Mobile-First -->
+    <nav class="bottom-nav">
+      <button type="button" class="bottom-nav-item active" id="bnav-landing" onclick="switchView('landing')">
+        <span class="nav-icon">🏠</span>
+        <span>Beranda</span>
+      </button>
+      <button type="button" class="bottom-nav-item" id="bnav-register" onclick="switchView('register')">
+        <span class="nav-icon">📝</span>
+        <span>Daftar</span>
+      </button>
+      <button type="button" class="bottom-nav-item" id="bnav-lookup" onclick="switchView('lookup')">
+        <span class="nav-icon">🔍</span>
+        <span>Peserta</span>
+      </button>
+      <button type="button" class="bottom-nav-item" id="bnav-admin" onclick="switchView('admin')">
+        <span class="nav-icon">🛡️</span>
+        <span>Panitia</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 1: KONFIRMASI SUBMIT PENDAFTARAN
+       ========================================================================== -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Konfirmasi Pengiriman</h3>
+        <button type="button" class="close-modal-btn" onclick="closeModal('confirmModal')">&times;</button>
+      </div>
+      <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        Pastikan rincian data Anda sudah valid sebelum dikirim ke sekretariat panitia:
+      </div>
+      <div class="card" id="confirmSummary" style="background: var(--bg-input); padding: 14px; font-size: 12.5px; line-height: 1.7; margin-bottom: 18px;">
+        <!-- Injeksi ringkasan via JS -->
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeModal('confirmModal')">Periksa Lagi</button>
+        <button type="button" class="btn btn-blue" id="btnSubmitFinal" style="flex: 2;" onclick="submitFinalRegistration()">Kirim Sekarang 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 2: DETAIL & EDIT CRUD PESERTA (PANITIA & MANDIRI)
+       ========================================================================== -->
+  <div class="modal-overlay" id="editParticipantModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="editModalTitle">Edit Biodata Peserta</h3>
+        <button type="button" class="close-modal-btn" onclick="closeModal('editParticipantModal')">&times;</button>
+      </div>
+      <form id="editParticipantForm" onsubmit="event.preventDefault(); saveEditedParticipant();">
+        <input type="hidden" id="editRegId">
+        
+        <div class="form-group">
+          <label class="form-label">ID Registrasi</label>
+          <input type="text" class="form-control" id="editDisplayRegId" disabled style="opacity: 0.7;">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nama Lengkap</label>
+          <input type="text" class="form-control" id="editNamaLengkap" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nama Panggilan</label>
+          <input type="text" class="form-control" id="editNamaPanggilan" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Perguruan Tinggi</label>
+          <input type="text" class="form-control" id="editPerguruanTinggi" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Program Studi</label>
+          <input type="text" class="form-control" id="editProdi" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nomor WhatsApp</label>
+          <input type="tel" class="form-control" id="editWhatsapp" required>
+        </div>
+
+        <!-- Khusus Panitia: Verifikasi Kelulusan & Status -->
+        <div id="adminStatusControlGroup" style="background: rgba(11, 78, 162, 0.15); padding: 12px; border-radius: 10px; margin-bottom: 16px;">
+          <label class="form-label" style="color: var(--pmii-yellow);">Status Verifikasi (Kewenangan Panitia)</label>
+          <select class="form-control" id="editStatus">
+            <option value="MENUNGGU VERIFIKASI">MENUNGGU VERIFIKASI</option>
+            <option value="TERVERIFIKASI">TERVERIFIKASI</option>
+            <option value="DITOLAK / REVISI">DITOLAK / REVISI</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeModal('editParticipantModal')">Batal</button>
+          <button type="submit" class="btn btn-blue" style="flex: 2;">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 3: TAMBAH PESERTA MANUAL (CREATE OLEH PANITIA)
+       ========================================================================== -->
+  <div class="modal-overlay" id="createParticipantModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Tambah Peserta Manual</h3>
+        <button type="button" class="close-modal-btn" onclick="closeModal('createParticipantModal')">&times;</button>
+      </div>
+      <form id="createManualForm" onsubmit="event.preventDefault(); saveManualParticipant();">
+        <div class="form-group">
+          <label class="form-label">Nama Lengkap <span class="req">*</span></label>
+          <input type="text" class="form-control" id="manualNamaLengkap" required placeholder="Sesuai KTP / KTM">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nama Panggilan <span class="req">*</span></label>
+          <input type="text" class="form-control" id="manualNamaPanggilan" required placeholder="Nama panggilan">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Jenis Kelamin <span class="req">*</span></label>
+          <select class="form-control" id="manualJenisKelamin" required>
+            <option value="Laki-laki">Laki-laki</option>
+            <option value="Perempuan">Perempuan</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Perguruan Tinggi <span class="req">*</span></label>
+          <input type="text" class="form-control" id="manualPerguruanTinggi" required value="PMII Budi Utomo Ponorogo">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Program Studi <span class="req">*</span></label>
+          <input type="text" class="form-control" id="manualProdi" required placeholder="Contoh: Pendidikan Agama Islam">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nomor WhatsApp <span class="req">*</span></label>
+          <input type="tel" class="form-control" id="manualWhatsapp" required placeholder="08xxxxxxxxxx">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status Verifikasi Awal</label>
+          <select class="form-control" id="manualStatus">
+            <option value="TERVERIFIKASI">TERVERIFIKASI</option>
+            <option value="MENUNGGU VERIFIKASI">MENUNGGU VERIFIKASI</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeModal('createParticipantModal')">Batal</button>
+          <button type="submit" class="btn btn-gold" style="flex: 2;">Simpan Peserta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       LOGIKA JAVASCRIPT TERPADU (CRUD, GAS SYNC & MOBILE INTERACTION)
+       ========================================================================== -->
+  <script>
+    /* 1. KONFIGURASI SISTEM */
+    const CONFIG = {
+      // URL Google Apps Script Web App Aktif:
+      googleScriptUrl: "https://script.google.com/macros/s/AKfycbxGGkm7twcjFI9YjdH1JDTLyRt-kM83DlGY-VAnFfA8R0H34oT50Uhg3Ho7Swa6LkF7/exec",
+      
+      organization: "PMII Budi Utomo Ponorogo",
+      eventName: "MAPABA",
+      year: "2026",
+      whatsapp: "6285233108302", // Nomor WA Panitia Resmi (format 62)
+      whatsappDisplay: "0852-3310-8302",
+      instagram: "pmiibudiutomoponorogo",
+      location: "Ponorogo, Jawa Timur",
+      adminPin: "pmii2026" // Sandi akses portal panitia
+    };
+
+    /* 2. STATE DAN DATA PENDAFTAR */
+    let currentStep = 1;
+    const totalSteps = 9;
+    const DRAFT_KEY = "MAPABA_BU_DRAFT_PONOROGO";
+    const THEME_KEY = "MAPABA_THEME_PONOROGO";
+    const DB_LOCAL_KEY = "MAPABA_LOCAL_DB_PONOROGO";
+    let compressedPhotoBase64 = "";
+    let activeSelfEditId = null;
+
+    // Database Mock Awal jika belum ada di browser
+    const INITIAL_MOCK_DATA = [
+      {
+        timestamp: "2026-09-01 09:15:00",
+        regId: "MAPABA-BU-2026-0001",
+        namaLengkap: "Muhammad Fajar Ramadhan",
+        namaPanggilan: "Fajar",
+        jenisKelamin: "Laki-laki",
+        perguruanTinggi: "PMII Budi Utomo Ponorogo",
+        fakultas: "Tarbiyah",
+        prodi: "Pendidikan Agama Islam",
+        nim: "202601001",
+        whatsapp: "085233108302",
+        kabupatenKota: "Ponorogo",
+        bidangMinatStr: "Keilmuan/Intelektual, Kajian Islam Aswaja",
+        status: "TERVERIFIKASI"
+      },
+      {
+        timestamp: "2026-09-02 14:30:22",
+        regId: "MAPABA-BU-2026-0002",
+        namaLengkap: "Siti Khoirun Nisa",
+        namaPanggilan: "Nisa",
+        jenisKelamin: "Perempuan",
+        perguruanTinggi: "PMII Budi Utomo Ponorogo",
+        fakultas: "Ekonomi & Bisnis Islam",
+        prodi: "Manajemen Zakat Wakaf",
+        nim: "202602045",
+        whatsapp: "081234567891",
+        kabupatenKota: "Madiun",
+        bidangMinatStr: "Media & Desain, Kewirausahaan",
+        status: "MENUNGGU VERIFIKASI"
+      }
+    ];
+
+    /* 3. INISIALISASI SAAT DOM SIAP */
+    document.addEventListener("DOMContentLoaded", () => {
+      initTheme();
+      initDatabase();
+      applyConfig();
+      checkDraft();
+      setupFormListeners();
+      updateStepUI();
+      renderAdminDashboard();
+    });
+
+    function initDatabase() {
+      if (!localStorage.getItem(DB_LOCAL_KEY)) {
+        localStorage.setItem(DB_LOCAL_KEY, JSON.stringify(INITIAL_MOCK_DATA));
+      }
+    }
+
+    function getLocalParticipants() {
+      try {
+        return JSON.parse(localStorage.getItem(DB_LOCAL_KEY)) || [];
+      } catch(e) {
+        return [];
+      }
+    }
+
+    function saveLocalParticipants(list) {
+      localStorage.setItem(DB_LOCAL_KEY, JSON.stringify(list));
+    }
+
+    /* 4. MODE SIANG / MALAM (DAY & NIGHT) */
+    function initTheme() {
+      const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
+      setTheme(savedTheme);
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem(THEME_KEY, theme);
+      const icon = document.getElementById("themeIcon");
+      const label = document.getElementById("themeLabel");
+      if (theme === "dark") {
+        icon.textContent = "☀️";
+        label.textContent = "Siang";
+      } else {
+        icon.textContent = "🌙";
+        label.textContent = "Malam";
+      }
+    }
+
+    function toggleDayNightMode() {
+      const current = document.documentElement.getAttribute("data-theme") || "dark";
+      setTheme(current === "dark" ? "light" : "dark");
+    }
+
+    /* 5. NAVIGASI VIEW */
+    function switchView(viewName) {
+      document.querySelectorAll(".view-section").forEach(v => v.classList.remove("active"));
+      document.querySelectorAll(".nav-btn, .bottom-nav-item").forEach(b => b.classList.remove("active"));
+
+      const targetView = document.getElementById(`view-${viewName}`);
+      if (targetView) targetView.classList.add("active");
+
+      const dBtn = document.getElementById(`dnav-${viewName}`);
+      if (dBtn) dBtn.classList.add("active");
+      const bBtn = document.getElementById(`bnav-${viewName}`);
+      if (bBtn) bBtn.classList.add("active");
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      if (viewName === "admin") {
+        renderAdminDashboard();
+      }
+    }
+
+    function applyConfig() {
+      document.getElementById("cfgOrg").textContent = CONFIG.organization;
+      document.getElementById("cfgLocLanding").textContent = CONFIG.location;
+
+      const helpWa = `https://wa.me/${CONFIG.whatsapp}?text=Halo%20Panitia%20MAPABA%20PMII%20Budi%20Utomo%20Ponorogo`;
+      const helpIg = `https://instagram.com/${CONFIG.instagram}`;
+
+      document.getElementById("btnLandingWa").href = helpWa;
+      document.getElementById("btnLandingIg").href = helpIg;
+      const lookupWa = document.getElementById("btnLookupWaHelp");
+      if (lookupWa) lookupWa.href = helpWa;
+    }
+
+    /* 6. FORM MULTI-STEP LOGIC */
+    function navigateStep(direction) {
+      if (direction === 1) {
+        if (!validateStep(currentStep)) {
+          const firstErr = document.querySelector(`.form-step[data-step="${currentStep}"] .has-error`);
+          if (firstErr) firstErr.scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+
+        if (currentStep < totalSteps) {
+          currentStep++;
+          updateStepUI();
+          saveDraft();
+          window.scrollTo({ top: document.getElementById("formWrapper").offsetTop - 20, behavior: "smooth" });
+        } else {
+          openConfirmModal();
+        }
+      } else if (direction === -1) {
+        if (currentStep > 1) {
+          currentStep--;
+          updateStepUI();
+          window.scrollTo({ top: document.getElementById("formWrapper").offsetTop - 20, behavior: "smooth" });
+        }
+      }
+    }
+
+    function updateStepUI() {
+      document.querySelectorAll(".form-step").forEach(st => st.classList.remove("active"));
+      const activeStepEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+      if (activeStepEl) {
+        activeStepEl.classList.add("active");
+        document.getElementById("stepNameTitle").textContent = `Langkah ${currentStep}: ${activeStepEl.getAttribute("data-step-name")}`;
+        document.getElementById("stepIcon").textContent = activeStepEl.getAttribute("data-icon") || "📝";
+      }
+
+      document.getElementById("stepCounterBadge").textContent = `${currentStep} / ${totalSteps}`;
+      document.getElementById("progressFill").style.width = `${(currentStep / totalSteps) * 100}%`;
+
+      document.getElementById("btnPrev").style.display = currentStep === 1 ? "none" : "inline-flex";
+      document.getElementById("btnNext").innerHTML = currentStep === totalSteps ? "Kirim Pendaftaran 🚀" : "Lanjutkan →";
+    }
+
+    function validateStep(step) {
+      let valid = true;
+      const stepEl = document.querySelector(`.form-step[data-step="${step}"]`);
+      stepEl.querySelectorAll(".has-error").forEach(el => el.classList.remove("has-error"));
+
+      if (step === 1) {
+        const nama = document.getElementById("namaLengkap").value.trim();
+        const panggilan = document.getElementById("namaPanggilan").value.trim();
+        const jk = document.querySelector('input[name="jenisKelamin"]:checked');
+        const tpt = document.getElementById("tempatLahir").value.trim();
+        const tgl = document.getElementById("tanggalLahir").value;
+        const wa = document.getElementById("whatsapp").value.trim();
+
+        if (nama.length < 3) { markError("group_namaLengkap"); valid = false; }
+        if (!panggilan) { markError("group_namaPanggilan"); valid = false; }
+        if (!jk) { markError("group_jenisKelamin"); valid = false; }
+        if (!tpt) { markError("group_tempatLahir"); valid = false; }
+        if (!tgl) { markError("group_tanggalLahir"); valid = false; }
+        if (!wa || wa.length < 10) { markError("group_whatsapp"); valid = false; }
+      }
+
+      if (step === 2) {
+        if (!document.getElementById("perguruanTinggi").value.trim()) { markError("group_perguruanTinggi"); valid = false; }
+        if (!document.getElementById("fakultas").value.trim()) { markError("group_fakultas"); valid = false; }
+        if (!document.getElementById("prodi").value.trim()) { markError("group_prodi"); valid = false; }
+        if (!document.getElementById("nim").value.trim()) { markError("group_nim"); valid = false; }
+        if (!document.getElementById("angkatan").value) { markError("group_angkatan"); valid = false; }
+        if (!document.getElementById("semester").value) { markError("group_semester"); valid = false; }
+      }
+
+      if (step === 3) {
+        if (document.getElementById("alamatRumah").value.trim().length < 5) { markError("group_alamatRumah"); valid = false; }
+        if (!document.getElementById("kabupatenKota").value.trim()) { markError("group_kabupatenKota"); valid = false; }
+      }
+
+      if (step === 4) {
+        if (!document.getElementById("asalSekolah").value.trim()) { markError("group_asalSekolah"); valid = false; }
+        if (!document.getElementById("tahunLulus").value) { markError("group_tahunLulus"); valid = false; }
+        const pesantrenRadio = document.querySelector('input[name="pernahPesantren"]:checked');
+        if (pesantrenRadio && pesantrenRadio.value === "Ya" && !document.getElementById("namaPesantren").value.trim()) {
+          markError("group_namaPesantren"); valid = false;
+        }
+      }
+
+      if (step === 5) {
+        if (!document.querySelector('input[name="pernahOrganisasi"]:checked')) {
+          markError("group_pernahOrganisasi"); valid = false;
+        }
+      }
+
+      if (step === 6) {
+        if (document.querySelectorAll('input[name="bidangMinat"]:checked').length === 0) {
+          markError("group_bidangMinat"); valid = false;
+        }
+      }
+
+      if (step === 7) {
+        if (!document.getElementById("sumberInfo").value) { markError("group_sumberInfo"); valid = false; }
+        if (document.getElementById("pengetahuanPmii").value.trim().length < 5) { markError("group_pengetahuanPmii"); valid = false; }
+        if (document.getElementById("alasanMapaba").value.trim().length < 5) { markError("group_alasanMapaba"); valid = false; }
+        if (document.getElementById("motivasiPmii").value.trim().length < 5) { markError("group_motivasiPmii"); valid = false; }
+        if (document.getElementById("harapanMapaba").value.trim().length < 5) { markError("group_harapanMapaba"); valid = false; }
+      }
+
+      if (step === 8) {
+        const k1 = document.querySelector('input[name="komitmenRangkaian"]:checked');
+        const k2 = document.querySelector('input[name="komitmenKaderisasi"]:checked');
+        const k3 = document.querySelector('input[name="komitmenTataTertib"]:checked');
+        const setuju = document.getElementById("pernyataanPeserta").checked;
+
+        if (!k1 || k1.value !== "Bersedia") { markError("group_komitmenRangkaian"); valid = false; }
+        if (!k2 || k2.value !== "Bersedia") { markError("group_komitmenKaderisasi"); valid = false; }
+        if (!k3 || k3.value !== "Bersedia") { markError("group_komitmenTataTertib"); valid = false; }
+        if (!setuju) { markError("group_pernyataanPeserta"); valid = false; }
+      }
+
+      return valid;
+    }
+
+    function markError(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add("has-error");
+    }
+
+    function updateTileSelection(container) {
+      const radio = container.querySelector('input[type="radio"]');
+      if (radio) {
+        radio.checked = true;
+        document.querySelectorAll(`input[name="${radio.name}"]`).forEach(r => {
+          r.closest('.option-tile').classList.remove('selected');
+        });
+        container.classList.add('selected');
+        saveDraft();
+      }
+    }
+
+    function updateCheckboxSelection(container) {
+      const cb = container.querySelector('input[type="checkbox"]');
+      if (cb) {
+        setTimeout(() => {
+          container.classList.toggle('selected', cb.checked);
+          saveDraft();
+        }, 10);
+      }
+    }
+
+    function togglePesantrenInput(show) {
+      document.getElementById("group_namaPesantren").style.display = show ? "block" : "none";
+    }
+
+    function toggleFaq(item) {
+      item.classList.toggle("active");
+      const icon = item.querySelector(".faq-question span:last-child");
+      if (icon) icon.textContent = item.classList.contains("active") ? "−" : "+";
+    }
+
+    function handlePhotoUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement("canvas");
+          let width = img.width, height = img.height;
+          const maxDim = 500;
+          if (width > height && width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+
+          compressedPhotoBase64 = canvas.toDataURL("image/jpeg", 0.7);
+          const preview = document.getElementById("fotoPreview");
+          preview.src = compressedPhotoBase64;
+          preview.style.display = "block";
+          document.getElementById("fotoUploadPlaceholder").style.display = "none";
+          saveDraft();
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /* 7. DRAF LOCALSTORAGE */
+    function setupFormListeners() {
+      document.querySelectorAll("#mapabaForm input, #mapabaForm select, #mapabaForm textarea").forEach(el => {
+        el.addEventListener("input", () => {
+          saveDraft();
+          const p = el.closest(".form-group");
+          if (p) p.classList.remove("has-error");
+        });
+      });
+    }
+
+    function collectFormData() {
+      const fd = new FormData(document.getElementById("mapabaForm"));
+      const data = {};
+      fd.forEach((val, key) => {
+        if (key === "bidangMinat") {
+          if (!data[key]) data[key] = [];
+          data[key].push(val);
+        } else {
+          data[key] = val;
+        }
+      });
+      data.bidangMinatStr = Array.isArray(data.bidangMinat) ? data.bidangMinat.join(", ") : (data.bidangMinat || "");
+      data.fotoBase64 = compressedPhotoBase64 || "";
+      data.year = CONFIG.year || "2026";
+      return data;
+    }
+
+    function saveDraft() {
+      try {
+        const d = collectFormData();
+        d.savedStep = currentStep;
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+      } catch(e) {}
+    }
+
+    function checkDraft() {
+      try {
+        const raw = localStorage.getItem(DRAFT_KEY);
+        if (raw) {
+          const draft = JSON.parse(raw);
+          if (draft && draft.namaLengkap) {
+            document.getElementById("draftAlert").style.display = "flex";
+          }
+        }
+      } catch(e) {}
+    }
+
+    function restoreDraft() {
+      try {
+        const draft = JSON.parse(localStorage.getItem(DRAFT_KEY));
+        if (!draft) return;
+        Object.keys(draft).forEach(key => {
+          const el = document.querySelector(`[name="${key}"]`);
+          if (el) {
+            if (el.type === "radio") {
+              const r = document.querySelector(`input[name="${key}"][value="${draft[key]}"]`);
+              if (r) { r.checked = true; r.closest('.option-tile')?.classList.add('selected'); }
+            } else if (el.type === "checkbox") {
+              if (key === "bidangMinat" && Array.isArray(draft[key])) {
+                draft[key].forEach(v => {
+                  const cb = document.querySelector(`input[name="bidangMinat"][value="${v}"]`);
+                  if (cb) { cb.checked = true; cb.closest('.option-tile')?.classList.add('selected'); }
+                });
+              } else if (key === "pernyataanPeserta" && draft[key] === "Setuju") {
+                el.checked = true;
+                el.closest('.option-tile')?.classList.add('selected');
+              }
+            } else {
+              el.value = draft[key];
+            }
+          }
+        });
+        if (draft.pernahPesantren === "Ya") togglePesantrenInput(true);
+        if (draft.fotoBase64) {
+          compressedPhotoBase64 = draft.fotoBase64;
+          const prev = document.getElementById("fotoPreview");
+          prev.src = compressedPhotoBase64;
+          prev.style.display = "block";
+          document.getElementById("fotoUploadPlaceholder").style.display = "none";
+        }
+        if (draft.savedStep) {
+          currentStep = draft.savedStep;
+          updateStepUI();
+        }
+        document.getElementById("draftAlert").style.display = "none";
+      } catch(e) {
+        discardDraft();
+      }
+    }
+
+    function discardDraft() {
+      localStorage.removeItem(DRAFT_KEY);
+      document.getElementById("draftAlert").style.display = "none";
+    }
+
+    /* 8. PENGIRIMAN AKHIR */
+    function openConfirmModal() {
+      const d = collectFormData();
+      document.getElementById("confirmSummary").innerHTML = `
+        <div><strong>Nama Lengkap:</strong> ${escapeHtml(d.namaLengkap)} (${escapeHtml(d.namaPanggilan)})</div>
+        <div><strong>WhatsApp:</strong> ${escapeHtml(d.whatsapp)}</div>
+        <div><strong>Kampus & Prodi:</strong> ${escapeHtml(d.perguruanTinggi)} - ${escapeHtml(d.prodi)}</div>
+        <div><strong>Asal Daerah:</strong> ${escapeHtml(d.kabupatenKota)}</div>
+        <div><strong>Bidang Minat:</strong> ${escapeHtml(d.bidangMinatStr)}</div>
+      `;
+      openModal("confirmModal");
+    }
+
+    async function submitFinalRegistration() {
+      const btn = document.getElementById("btnSubmitFinal");
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner"></div> Mengirimkan...`;
+
+      const payload = collectFormData();
+      payload.timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+      payload.status = "MENUNGGU VERIFIKASI";
+
+      try {
+        let finalRegId = `MAPABA-BU-${CONFIG.year}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+        if (CONFIG.googleScriptUrl) {
+          const resp = await fetch(CONFIG.googleScriptUrl, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+          });
+          const res = await resp.json();
+          if (res && res.status === "SUCCESS") {
+            finalRegId = res.registrationId || finalRegId;
+          }
+        }
+
+        payload.regId = finalRegId;
+        const list = getLocalParticipants();
+        list.unshift(payload);
+        saveLocalParticipants(list);
+
+        localStorage.removeItem(DRAFT_KEY);
+        closeModal("confirmModal");
+
+        document.getElementById("formWrapper").style.display = "none";
+        const succ = document.getElementById("successView");
+        succ.style.display = "block";
+
+        document.getElementById("resRegId").textContent = finalRegId;
+        document.getElementById("resNama").textContent = payload.namaLengkap;
+        document.getElementById("resCampus").textContent = `${payload.perguruanTinggi} • ${payload.prodi}`;
+
+        const waMsg = encodeURIComponent(
+          `Assalamu'alaikum Panitia MAPABA PMII Budi Utomo Ponorogo.\n\nSaya telah mendaftar dengan data:\n- ID: ${finalRegId}\n- Nama: ${payload.namaLengkap}\n- Kampus: ${payload.perguruanTinggi}\n\nMohon informasi teknis selanjutnya. Terima kasih!`
+        );
+        document.getElementById("waConfirmBtn").href = `https://wa.me/${CONFIG.whatsapp}?text=${waMsg}`;
+
+        renderAdminDashboard();
+      } catch (err) {
+        payload.regId = `MAPABA-BU-${CONFIG.year}-OFFL${Math.floor(100 + Math.random() * 900)}`;
+        const list = getLocalParticipants();
+        list.unshift(payload);
+        saveLocalParticipants(list);
+        closeModal("confirmModal");
+
+        document.getElementById("formWrapper").style.display = "none";
+        const succ = document.getElementById("successView");
+        succ.style.display = "block";
+        document.getElementById("resRegId").textContent = payload.regId;
+        document.getElementById("resNama").textContent = payload.namaLengkap;
+        document.getElementById("resCampus").textContent = `${payload.perguruanTinggi} • ${payload.prodi}`;
+        renderAdminDashboard();
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Kirim Sekarang 🚀";
+      }
+    }
+
+    function resetFormToStart() {
+      document.getElementById("mapabaForm").reset();
+      compressedPhotoBase64 = "";
+      document.getElementById("fotoPreview").style.display = "none";
+      document.getElementById("fotoUploadPlaceholder").style.display = "block";
+      document.querySelectorAll(".option-tile").forEach(t => t.classList.remove("selected"));
+      currentStep = 1;
+      document.getElementById("successView").style.display = "none";
+      document.getElementById("formWrapper").style.display = "block";
+      updateStepUI();
+      switchView("register");
+    }
+
+    /* 9. DASHBOARD PESERTA: CEK STATUS & UPDATE MANDIRI (READ & UPDATE) */
+    function searchParticipantStatus() {
+      const q = document.getElementById("lookupQuery").value.trim().toLowerCase();
+      const resBox = document.getElementById("lookupResult");
+      const notFound = document.getElementById("lookupNotFound");
+
+      if (!q) {
+        alert("Harap masukkan ID Pendaftaran atau No. WhatsApp Anda!");
+        return;
+      }
+
+      const list = getLocalParticipants();
+      const p = list.find(item => 
+        (item.regId && item.regId.toLowerCase() === q) || 
+        (item.whatsapp && item.whatsapp.replace(/\D/g, '') === q.replace(/\D/g, ''))
+      );
+
+      if (p) {
+        notFound.style.display = "none";
+        resBox.style.display = "block";
+
+        document.getElementById("lookId").textContent = p.regId;
+        document.getElementById("lookName").textContent = p.namaLengkap;
+        document.getElementById("lookCampus").textContent = `${p.perguruanTinggi} • ${p.fakultas || ''}`;
+        document.getElementById("lookWa").textContent = p.whatsapp;
+        document.getElementById("lookProdi").textContent = `${p.prodi || '-'} (Angkatan ${p.angkatan || '-'})`;
+        document.getElementById("lookMinat").textContent = p.bidangMinatStr || "-";
+        document.getElementById("lookTime").textContent = p.timestamp || "-";
+
+        const badge = document.getElementById("lookBadge");
+        badge.textContent = p.status || "MENUNGGU VERIFIKASI";
+        badge.className = "status-badge " + (p.status === "TERVERIFIKASI" ? "badge-verified" : (p.status === "DITOLAK / REVISI" ? "badge-rejected" : "badge-pending"));
+
+        activeSelfEditId = p.regId;
+
+        const waMsg = encodeURIComponent(`Halo Panitia MAPABA PMII Budi Utomo Ponorogo, saya ${p.namaLengkap} (ID: ${p.regId}) ingin menanyakan perihal berkas saya.`);
+        document.getElementById("btnLookupWaHelp").href = `https://wa.me/${CONFIG.whatsapp}?text=${waMsg}`;
+      } else {
+        resBox.style.display = "none";
+        notFound.style.display = "block";
+      }
+    }
+
+    function openSelfEditModal() {
+      if (!activeSelfEditId) return;
+      openEditModal(activeSelfEditId, false);
+    }
+
+    /* 10. DASHBOARD PANITIA: DASHBOARD, SEARCH, FILTER, UPDATE, DELETE */
+    function loginAdmin() {
+      const pin = document.getElementById("adminPinInput").value;
+      if (pin === CONFIG.adminPin) {
+        document.getElementById("adminLoginGate").style.display = "none";
+        document.getElementById("adminPanel").style.display = "block";
+        renderAdminDashboard();
+      } else {
+        alert("PIN Panitia salah! Silakan coba lagi (Default: pmii2026)");
+      }
+    }
+
+    function logoutAdmin() {
+      document.getElementById("adminPinInput").value = "";
+      document.getElementById("adminPanel").style.display = "none";
+      document.getElementById("adminLoginGate").style.display = "block";
+    }
+
+    function renderAdminDashboard() {
+      const list = getLocalParticipants();
+
+      const total = list.length;
+      const verified = list.filter(p => p.status === "TERVERIFIKASI").length;
+      const pending = list.filter(p => p.status === "MENUNGGU VERIFIKASI").length;
+      const lk = list.filter(p => p.jenisKelamin === "Laki-laki").length;
+      const pr = list.filter(p => p.jenisKelamin === "Perempuan").length;
+
+      document.getElementById("statTotal").textContent = total;
+      document.getElementById("statVerified").textContent = verified;
+      document.getElementById("statPending").textContent = pending;
+      document.getElementById("statGender").textContent = `${lk} L / ${pr} P`;
+
+      filterAdminTable();
+    }
+
+    function filterAdminTable() {
+      const query = (document.getElementById("adminSearchInput")?.value || "").toLowerCase();
+      const filterStatus = document.getElementById("adminFilterStatus")?.value || "ALL";
+      const list = getLocalParticipants();
+      const tbody = document.getElementById("adminTableBody");
+      const emptyNotice = document.getElementById("adminEmptyNotice");
+
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      const filtered = list.filter(item => {
+        const matchesQuery = 
+          (item.namaLengkap && item.namaLengkap.toLowerCase().includes(query)) ||
+          (item.regId && item.regId.toLowerCase().includes(query)) ||
+          (item.perguruanTinggi && item.perguruanTinggi.toLowerCase().includes(query)) ||
+          (item.nim && item.nim.toLowerCase().includes(query)) ||
+          (item.whatsapp && item.whatsapp.includes(query));
+
+        const matchesStatus = (filterStatus === "ALL") || (item.status === filterStatus);
+        return matchesQuery && matchesStatus;
+      });
+
+      if (filtered.length === 0) {
+        emptyNotice.style.display = "block";
+      } else {
+        emptyNotice.style.display = "none";
+        filtered.forEach((p, idx) => {
+          const tr = document.createElement("tr");
+          const badgeClass = p.status === "TERVERIFIKASI" ? "badge-verified" : (p.status === "DITOLAK / REVISI" ? "badge-rejected" : "badge-pending");
+          
+          tr.innerHTML = `
+            <td>${idx + 1}</td>
+            <td><strong>${escapeHtml(p.regId)}</strong></td>
+            <td>
+              <div style="font-weight: 700;">${escapeHtml(p.namaLengkap)}</div>
+              <div style="font-size: 11px; color: var(--text-dim);">${escapeHtml(p.jenisKelamin || '-')}</div>
+            </td>
+            <td>${escapeHtml(p.perguruanTinggi)}<br><small style="color: var(--text-muted);">${escapeHtml(p.prodi || '-')}</small></td>
+            <td>
+              <a href="https://wa.me/${p.whatsapp.replace(/\D/g, '')}" target="_blank" style="color: var(--pmii-yellow); font-weight:700; text-decoration: none;">
+                ${escapeHtml(p.whatsapp)}
+              </a>
+            </td>
+            <td><span class="status-badge ${badgeClass}">${escapeHtml(p.status || 'MENUNGGU')}</span></td>
+            <td>
+              <div class="action-btn-group">
+                <button type="button" class="btn btn-outline btn-sm" onclick="openEditModal('${p.regId}', true)">✏️ Edit</button>
+                <button type="button" class="btn btn-outline btn-sm" style="color: var(--status-rejected);" onclick="deleteParticipant('${p.regId}')">🗑️</button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    function openEditModal(regId, isAdminMode) {
+      const list = getLocalParticipants();
+      const p = list.find(item => item.regId === regId);
+      if (!p) return;
+
+      document.getElementById("editRegId").value = p.regId;
+      document.getElementById("editDisplayRegId").value = p.regId;
+      document.getElementById("editNamaLengkap").value = p.namaLengkap || "";
+      document.getElementById("editNamaPanggilan").value = p.namaPanggilan || "";
+      document.getElementById("editPerguruanTinggi").value = p.perguruanTinggi || "";
+      document.getElementById("editProdi").value = p.prodi || "";
+      document.getElementById("editWhatsapp").value = p.whatsapp || "";
+      document.getElementById("editStatus").value = p.status || "MENUNGGU VERIFIKASI";
+
+      document.getElementById("adminStatusControlGroup").style.display = isAdminMode ? "block" : "none";
+      document.getElementById("editModalTitle").textContent = isAdminMode ? "Kelola & Verifikasi Peserta" : "Perbarui Biodata Mandiri";
+
+      openModal("editParticipantModal");
+    }
+
+    function saveEditedParticipant() {
+      const regId = document.getElementById("editRegId").value;
+      const list = getLocalParticipants();
+      const idx = list.findIndex(p => p.regId === regId);
+      if (idx === -1) return;
+
+      list[idx].namaLengkap = document.getElementById("editNamaLengkap").value.trim();
+      list[idx].namaPanggilan = document.getElementById("editNamaPanggilan").value.trim();
+      list[idx].perguruanTinggi = document.getElementById("editPerguruanTinggi").value.trim();
+      list[idx].prodi = document.getElementById("editProdi").value.trim();
+      list[idx].whatsapp = document.getElementById("editWhatsapp").value.trim();
+      
+      const adminGroup = document.getElementById("adminStatusControlGroup");
+      if (adminGroup.style.display !== "none") {
+        list[idx].status = document.getElementById("editStatus").value;
+      }
+
+      saveLocalParticipants(list);
+      closeModal("editParticipantModal");
+      alert("Perubahan data berhasil disimpan!");
+      renderAdminDashboard();
+
+      if (document.getElementById("view-lookup").classList.contains("active")) {
+        searchParticipantStatus();
+      }
+    }
+
+    function deleteParticipant(regId) {
+      if (!confirm(`Yakin ingin menghapus data peserta dengan ID: ${regId}?`)) {
+        return;
+      }
+      let list = getLocalParticipants();
+      list = list.filter(p => p.regId !== regId);
+      saveLocalParticipants(list);
+      renderAdminDashboard();
+    }
+
+    function openCreateModal() {
+      document.getElementById("createManualForm").reset();
+      openModal("createParticipantModal");
+    }
+
+    function saveManualParticipant() {
+      const list = getLocalParticipants();
+      const newP = {
+        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+        regId: `MAPABA-BU-${CONFIG.year}-ADM${Math.floor(100 + Math.random() * 900)}`,
+        namaLengkap: document.getElementById("manualNamaLengkap").value.trim(),
+        namaPanggilan: document.getElementById("manualNamaPanggilan").value.trim(),
+        jenisKelamin: document.getElementById("manualJenisKelamin").value,
+        perguruanTinggi: document.getElementById("manualPerguruanTinggi").value.trim(),
+        prodi: document.getElementById("manualProdi").value.trim(),
+        whatsapp: document.getElementById("manualWhatsapp").value.trim(),
+        status: document.getElementById("manualStatus").value
+      };
+
+      list.unshift(newP);
+      saveLocalParticipants(list);
+      closeModal("createParticipantModal");
+      alert(`Peserta baru berhasil ditambahkan dengan ID: ${newP.regId}`);
+      renderAdminDashboard();
+    }
+
+    function exportDataToCSV() {
+      const list = getLocalParticipants();
+      if (list.length === 0) {
+        alert("Belum ada data pendaftar untuk diekspor.");
+        return;
+      }
+
+      let csv = "ID Pendaftaran,Waktu,Nama Lengkap,Nama Panggilan,Jenis Kelamin,WhatsApp,Kampus,Prodi,Status\n";
+      list.forEach(p => {
+        csv += `"${p.regId}","${p.timestamp || ''}","${p.namaLengkap}","${p.namaPanggilan || ''}","${p.jenisKelamin || ''}","'${p.whatsapp}","${p.perguruanTinggi}","${p.prodi || ''}","${p.status}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `MAPABA_PMII_BU_PONOROGO_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.add("show");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("show");
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
